@@ -3,7 +3,7 @@ import shutil
 import os
 import socket
 import platform
-import psutil
+
 
 "Creating a class called system Report, It contains the fuctions that will help the script run"
 

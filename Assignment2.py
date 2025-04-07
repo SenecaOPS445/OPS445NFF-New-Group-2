@@ -12,7 +12,7 @@ import shutil
 import os
 import socket
 import platform
-import psutil
+
 
 "Creating a class called system Report, It contains the fuctions that will help the script run"
 
@@ -26,13 +26,12 @@ class SystemReport:
         self.cpu_info = None
         self.ip = None
 
+    
     def get_disk(self):
         "Retrieve and return disk usage statistics."
 
-        total = shutil.disk_usage("/")
-        used = shutil.disk_usage("/")
-        free = shutil.disk_usage("/")
-
+        free, used, total = shutil.disk_usage("/")
+       
         # Format data for readability 
         disk_info = {
             "Total Space": f"{total // (2**30)} GB",
@@ -43,8 +42,7 @@ class SystemReport:
         return disk_info
     
     def get_uptime(self):
-        "Recieve the uptime data and returns in readable format."
-
+        "Receive the uptime data and return it in a readable format."
         try:
             with open("/proc/uptime", 'r') as f:
                 uptime_sec = float(f.readline().split()[0])
@@ -58,29 +56,70 @@ class SystemReport:
         
         except Exception as e:
             return f"Error reading uptime: {e}"
-    
-    def get_ip(self):
-        
 
-        return
+    def get_ip(self):
+        "Retrieval of the OS IP address"
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip_add = s.getsockname()[0]
+        s.close()
+
+        return ip_add
     
     def get_os(self):
-        
+        "Retrieval of the os information"
 
-        return
+        os_name = platform.system()
+        os_version = platform.version()
+        os_release = platform.release()
+
+        return f"{os_name} {os_release} (Ver: {os_version})"
     
+   
     def get_dir(self):
-        "Retrieve and returns a list of Installed Dir"
+        "Check the directories that are presently installed"
 
-        return
+        dirs = ["/bin", "/usr", "/etc", "/var", "/opt", "/home", "/sbin", "/lib", "/boot"]
+
+        found = filter(os.path.isdir, dirs)
+
+        try:
+            user = os.getlogin()
+        except OSError:
+            #IF os.getlogin fails or an error is encountered 
+            user = os.environ.get("USER", " Unknown")
+
+        return f"Installed Directories:\n" + "\n".join(dirs) + f"\n\nCurrent User: {user}"
     
     
     def get_cpu_info(self):
-        "Retrieve and returns CPU details"
+        "Retrieve and return CPU details"
+        try:
+            with open("/proc/cpuinfo", "r") as f:
+                lines = f.readlines()
+            
+            cpu_model = None
+            cpu_cores = 0
 
-        return
+            for line in lines:
+                if "model name" in line.lower() and cpu_model is None:
+                    parts = line.split(":")
+                    if len(parts) > 1:
+                        cpu_model = parts[1].strip()
+                if line.lower().startswith("processor"):
+                    cpu_cores += 1
+            
+            if cpu_model is None:
+                cpu_model = "Unknown"
+
+            return f"Model: {cpu_model}\nCores: {cpu_cores}"
+        
+        except Exception as e:
+            return f"Error retrieving CPU info: {e}"
+
     
-    def Report(self):
+    def generate_report(self):
         "Takes information and returns all the data into a documented format"
         return {
 
@@ -99,7 +138,7 @@ class SystemReport:
 
         }
     
-    def Report_show(self):
+    def report_show(self):
         "Prints the Information in the system report to make it readable"
         report = self.Report()
 
