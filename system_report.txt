@@ -1,0 +1,26 @@
+Disk Usage:
+  Total Space: 12 GB
+  Used Space: 19 GB
+  Free Space: 33 GB
+IP address:
+10.0.2.15
+OS information:
+Linux 5.15.0-135-generic (Ver: #146-Ubuntu SMP Sat Feb 15 17:06:22 UTC 2025)
+Uptime:
+0d 12h 11m 22s
+Installed Directories:
+Installed Directories:
+/bin
+/usr
+/etc
+/var
+/opt
+/home
+/sbin
+/lib
+/boot
+
+Current User: jowusu9
+CPU information:
+Model: AMD Ryzen 5 3600 6-Core Processor
+Cores: 2
