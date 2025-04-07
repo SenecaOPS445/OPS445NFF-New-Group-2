@@ -7,7 +7,7 @@
 ### Group 2 Members:Jude Owusu - 103399176 
 
 
-import argparse
+import sys
 import shutil
 import os
 import socket
@@ -90,7 +90,7 @@ class SystemReport:
             #IF os.getlogin fails or an error is encountered 
             user = os.environ.get("USER", " Unknown")
 
-        return f"Installed Directories:\n" + "\n".join(dirs) + f"\n\nCurrent User: {user}"
+        return "\n".join(found) + f"\n\nCurrent User: {user}"
     
     
     def get_cpu_info(self):
@@ -121,7 +121,7 @@ class SystemReport:
     
     def generate_report(self):
         "Takes information and returns all the data into a documented format"
-        return {
+        report_data = {
 
             "Disk Usage": self.get_disk(),
 
@@ -133,22 +133,46 @@ class SystemReport:
 
             "Installed Directories": self.get_dir(),
 
-
             "CPU information": self.get_cpu_info()
 
         }
+        return report_data
     
-    def report_show(self):
-        "Prints the Information in the system report to make it readable"
-        report = self.Report()
+    def report_document(self):
+        """Prints the information in the system report in a readable format."""
+        report_data = self.generate_report()
+
+        # Formatting report display
+        formatted_report = "\n" + "=" * 40 + "\nSYSTEM REPORT and METRICS\n" + "=" * 40 + "\n"
+
+        for key, value in report_data.items():
+            formatted_report += f"\n{key}:\n"
+
+            # If value is a dictionary, format its key-value pairs
+            if isinstance(value, dict):
+                for sub_key, sub_value in value.items():
+                    formatted_report += f"  {sub_key}: {sub_value}\n"
+            else:
+                formatted_report += f"{value}\n"
+
+        print(formatted_report)
 
 def main():
-    "main function to execute the script"
-    report = SystemReport()
-    disk_info = report.get_disk()
-    print("Disk Usage Test Output:")
-    for key, value in disk_info.items():
-        print(f"{key}: {value}")
+    # Command-line arguments
+    if "-save" in sys.argv:
+        # Create report and format it as a string
+        report = SystemReport()
+        report_data = report.generate_report()
+        formatted_report = "\n".join([f"{key}:\n{value}" if not isinstance(value, dict) else f"{key}:\n" + '\n'.join([f"  {k}: {v}" for k, v in value.items()]) for key, value in report_data.items()])
+
+        # Save to file
+        with open("system_report.txt", "w") as file:
+            file.write(formatted_report)
+
+        print("Report saved to system_report.txt")
+    else:
+        # Show report if no save flag
+        SystemReport().report_document()
 
 if __name__ == "__main__":
     main()
