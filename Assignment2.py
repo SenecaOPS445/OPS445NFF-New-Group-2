@@ -4,7 +4,7 @@
 ### Instructor: Eric Brauer
 ### Winter 2025 Assignment 2
 ### ASSIGNMENT 2: System Reporting and Metrics Script
-### Group 2 Members:Jude Owusu - 103399176 
+### Group 2 Members:Jude Owusu - 103399176 ; Tania Chaudhary - 106787237
 
 
 import sys
